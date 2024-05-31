@@ -1,0 +1,84 @@
+name: build
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+
+  windows2019:
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ["Win32", "x64", "ARM64", "ARM"]
+        vc: ["Visual Studio 16 2019"]
+        shared: ["ON", "OFF"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: fluidsynth-lite
+      - name: configure
+        run: cmake -B build/fluidsynth-lite -DCMAKE_BUILD_TYPE=Debug -G "${{ matrix.vc }}" -A ${{ matrix.arch }} -S ${{ github.workspace }}/fluidsynth-lite -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+      - name: build
+        run: cmake --build build/fluidsynth-lite
+
+  windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ["Win32", "x64", "ARM64", "ARM"]
+        vc: ["Visual Studio 17 2022"]
+        shared: [ "ON", "OFF" ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: fluidsynth-lite
+      - name: configure
+        run: cmake -B build/fluidsynth-lite -DCMAKE_BUILD_TYPE=Debug -G "${{ matrix.vc }}" -A ${{ matrix.arch }} -S ${{ github.workspace }}/fluidsynth-lite -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+      - name: build
+        run: cmake --build build/fluidsynth-lite
+
+  msys:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - { sys: mingw64, env: x86_64, shared: ON }
+          - { sys: mingw32, env: i686, shared: ON }
+          - { sys: ucrt64,  env: ucrt-x86_64, shared: ON }
+          - { sys: clang64, env: clang-x86_64, shared: ON }
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: ${{matrix.sys}}
+          install: mingw-w64-x86_64-ninja
+      - uses: actions/checkout@v4
+        with:
+          path: fluidsynth-lite
+      - name: configure
+        run: cmake -B build/fluidsynth-lite -DCMAKE_BUILD_TYPE=Debug -G "MSYS Makefiles" -S ${{ github.workspace }}/fluidsynth-lite -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+      - name: build
+        run: cmake --build build/fluidsynth-lite
+
+  unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [ "gcc", "clang" ]
+        shared: [ "ON", "OFF" ]
+        os: [ "macos-latest", "ubuntu-latest", "macos-11", "ubuntu-20.04" ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: seanmiddleditch/gha-setup-ninja@master
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ github.workspace }}/fluidsynth-lite
+      - name: configure
+        run: cmake -B build/fluidsynth-lite -DCMAKE_BUILD_TYPE=Debug -G Ninja -S ${{ github.workspace }}/fluidsynth-lite -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DCMAKE_C_COMPILER=${{ matrix.compiler }}
+      - name: build
+        run: cmake --build build/fluidsynth-lite
