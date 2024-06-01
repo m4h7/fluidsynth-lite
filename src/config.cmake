@@ -13,9 +13,6 @@
 /* whether or not we are supporting CoreMIDI */
 #cmakedefine COREMIDI_SUPPORT @COREMIDI_SUPPORT@
 
-/* whether or not we are supporting DART */
-#cmakedefine DART_SUPPORT @DART_SUPPORT@
-
 /* Define if building for Mac OS X Darwin */
 #cmakedefine DARWIN @DARWIN@
 
@@ -126,9 +123,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
-
-/* Define to 1 if you have the <windows.h> header file. */
-#cmakedefine HAVE_WINDOWS_H @HAVE_WINDOWS_H@
 
 /* Define to 1 if you have the <getopt.h> header file. */
 #cmakedefine HAVE_GETOPT_H @HAVE_GETOPT_H@
