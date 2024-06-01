@@ -46,7 +46,8 @@ jobs:
       - name: install
         run: cmake --install build/fluidsynth-lite --config ${{ matrix.build }}
       - name: cpack
-        run: cd build/fluidsynth-lite && cpack -C ${{ matrix.build }}
+        run: cd build/fluidsynth-lite && cpack -C ${{ matrix.build }} --config CPackConfig.cmake && cpack -C ${{ matrix.build }} --config CPackSourceConfig.cmake
+
 
   msys:
     runs-on: windows-latest
@@ -85,7 +86,7 @@ jobs:
       - name: install
         run: cmake --install build/fluidsynth-lite --prefix install --config ${{ matrix.build }}
       - name: cpack
-        run: cd build/fluidsynth-lite && cpack -C ${{ matrix.build }}
+        run: cd build/fluidsynth-lite && cpack -C ${{ matrix.build }} --config CPackConfig.cmake && cpack -C ${{ matrix.build }} --config CPackSourceConfig.cmake
 
   unix:
     strategy:
@@ -127,4 +128,5 @@ jobs:
       - name: install
         run: cmake --install build/fluidsynth-lite --prefix install --config ${{ matrix.build }}
       - name: cpack
-        run: cd build/fluidsynth-lite && cpack -C ${{ matrix.build }}
+        run: cd build/fluidsynth-lite && cpack -C ${{ matrix.build }} --config CPackConfig.cmake && cpack -C ${{ matrix.build }} --config CPackSourceConfig.cmake
+
