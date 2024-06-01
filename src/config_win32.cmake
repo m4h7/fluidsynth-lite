@@ -1,7 +1,5 @@
 #pragma once
 
-#cmakedefine HAVE_IO_H @HAVE_IO_H@
-
 #define DSOUND_SUPPORT 1
 #define WINMIDI_SUPPORT 1
 

@@ -19,18 +19,6 @@
 
 # CMake based build system. Pedro Lopez-Cabanillas <plcl@users.sf.net>
 
-include_directories (
-    ${CMAKE_CURRENT_BINARY_DIR}/..
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/synth
-    ${CMAKE_CURRENT_SOURCE_DIR}/rvoice
-    ${CMAKE_CURRENT_SOURCE_DIR}/midi
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils
-    ${CMAKE_CURRENT_SOURCE_DIR}/sfloader
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    ${CMAKE_CURRENT_BINARY_DIR}/../include
-)
-
 # ************ library ************
 
 set ( libfluidsynth_SOURCES
@@ -93,15 +81,13 @@ set ( libfluidsynth_SOURCES
     midi/fluid_seq.c
 )
 
-if ( APPLE )
-    list ( APPEND libfluidsynth_SOURCES
-        utils/apple/timing_mach.c
-    )
-endif( APPLE )
+if (APPLE)
+    list(APPEND libfluidsynth_SOURCES utils/apple/timing_mach.c)
+endif()
 
 # note: by default this target creates a shared object (or dll). To build a
 # static library instead, set the option BUILD_SHARED_LIBS to FALSE.
-add_library ( libfluidsynth
+add_library(libfluidsynth
     ${config_SOURCES}
     ${fluid_windows_SOURCES}
     ${libfluidsynth_SOURCES}
@@ -109,29 +95,21 @@ add_library ( libfluidsynth
     ${public_main_HEADER}
 )
 
-if ( MACOSX_FRAMEWORK )
-     set_property ( SOURCE ${public_HEADERS}
-         PROPERTY MACOSX_PACKAGE_LOCATION Headers/fluidsynth
-     )
-    set_target_properties ( libfluidsynth
-      PROPERTIES
-        OUTPUT_NAME "FluidSynth"
-        FRAMEWORK TRUE
-        PUBLIC_HEADER "${public_main_HEADER}"
-        FRAMEWORK_VERSION "${LIB_VERSION_CURRENT}"
-        INSTALL_NAME_DIR ""
-        VERSION ${LIB_VERSION_INFO}
-        SOVERSION ${LIB_VERSION_CURRENT}
-    )
-elseif ( OS2 )
-    set_target_properties ( libfluidsynth
-      PROPERTIES
-        OUTPUT_NAME "fluidsyn"
-        ARCHIVE_OUTPUT_NAME "fluidsynth"
-        VERSION ${LIB_VERSION_INFO}
-        SOVERSION ${LIB_VERSION_CURRENT}
-    )
-else ( MACOSX_FRAMEWORK )
+if (MACOSX_FRAMEWORK)
+  set_property(SOURCE ${public_HEADERS}
+    PROPERTY MACOSX_PACKAGE_LOCATION Headers/fluidsynth
+  )
+  set_target_properties(libfluidsynth
+    PROPERTIES
+      OUTPUT_NAME "FluidSynth"
+      FRAMEWORK TRUE
+      PUBLIC_HEADER "${public_main_HEADER}"
+      FRAMEWORK_VERSION "${LIB_VERSION_CURRENT}"
+      INSTALL_NAME_DIR ""
+      VERSION ${LIB_VERSION_INFO}
+      SOVERSION ${LIB_VERSION_CURRENT}
+  )
+else(MACOSX_FRAMEWORK)
   set_target_properties ( libfluidsynth
     PROPERTIES
       PREFIX "lib"
@@ -139,16 +117,79 @@ else ( MACOSX_FRAMEWORK )
       VERSION ${LIB_VERSION_INFO}
       SOVERSION ${LIB_VERSION_CURRENT}
   )
-endif ( MACOSX_FRAMEWORK )
+endif(MACOSX_FRAMEWORK)
 
-if ( LIBFLUID_CPPFLAGS )
-  set_target_properties ( libfluidsynth
+if (LIBFLUID_CPPFLAGS)
+  set_target_properties(libfluidsynth
     PROPERTIES COMPILE_FLAGS ${LIBFLUID_CPPFLAGS} )
-endif ( LIBFLUID_CPPFLAGS )
+endif (LIBFLUID_CPPFLAGS)
 
-target_link_libraries ( libfluidsynth
-    ${WINDOWS_LIBS}
-    ${LIBFLUID_LIBS}
+target_link_libraries(libfluidsynth ${LIBFLUID_LIBS})
+
+if (WIN32)
+  target_link_libraries(libfluidsynth dsound winmm ws2_32)
+endif()
+
+if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
+  target_compile_options(libfluidsynth PRIVATE
+    -Wall
+    -Weverything
+    -Wno-unsafe-buffer-usage
+    -Wno-padded)
+elseif (CMAKE_COMPILER_IS_GNUCC)
+  target_compile_options(libfluidsynth PRIVATE -Wall -Wextra -Wconversion)
+  if (CMAKE_C_COMPILER_VERSION VERSION_GREATER 14.0)
+    target_compile_options(libfluidsynth PRIVATE -fanalyzer)
+  endif()
+elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "MSVC")
+  target_compile_options(libfluidsynth PRIVATE /Wall)
+endif()
+
+#target_compile_features(libfluidsynth PRIVATE c_std_99)
+set_target_properties(libfluidsynth PROPERTIES C_EXTENSIONS OFF)
+set_target_properties(libfluidsynth PROPERTIES C_VISIBILITY_PRESET hidden)
+
+target_compile_definitions(libfluidsynth PRIVATE
+    $<$<CONFIG:Debug>:
+        DEBUG=1
+    >
+)
+
+target_compile_definitions(libfluidsynth PRIVATE
+    $<$<CONFIG:Release>:
+        NDEBUG=1
+    >
+)
+
+set(CFLAGS_DEBUG -g)
+set(CFLAGS_DEBUG_GCC -ggdb3)
+
+target_compile_options(libfluidsynth PRIVATE
+    $<$<CONFIG:Debug>:${CFLAGS_DEBUG}>)
+
+target_compile_options(libfluidsynth PRIVATE
+    $<$<AND:$<CONFIG:Debug>,$<C_COMPILER_ID:GNU>>:${CFLAGS_DEBUG}>)
+
+set(CFLAGS_RELEASE -O3 -finline-functions)
+set(CFLAGS_RELEASE_GCC -funroll-all-loops)
+
+target_compile_options(libfluidsynth PRIVATE
+    $<$<AND:$<CONFIG:Release>,$<C_COMPILER_ID:GNU,AppleClang,Clang>>:${CFLAGS_RELEASE}>)
+
+target_compile_options(libfluidsynth PRIVATE
+    $<$<AND:$<CONFIG:Release>,$<C_COMPILER_ID:GNU>>:${CFLAGS_RELEASE_GCC}>)
+
+target_include_directories(
+  libfluidsynth PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/.. # config.h
+#    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/synth
+    ${CMAKE_CURRENT_SOURCE_DIR}/rvoice
+    ${CMAKE_CURRENT_SOURCE_DIR}/midi
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/sfloader
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
+    ${CMAKE_CURRENT_BINARY_DIR}/../include # version.h
 )
 
 install(TARGETS libfluidsynth

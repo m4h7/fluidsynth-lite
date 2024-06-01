@@ -91,7 +91,7 @@
 #endif
 
 #if HAVE_LIMITS_H
-#include <limits.h>
+//#include <limits.h>
 #endif
 
 #ifdef _WIN32

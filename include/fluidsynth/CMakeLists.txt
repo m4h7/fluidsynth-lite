@@ -19,33 +19,33 @@
 
 # CMake based build system. Pedro Lopez-Cabanillas <plcl@users.sf.net>
 
-configure_file ( ${CMAKE_CURRENT_SOURCE_DIR}/version.h.in 
-                 ${CMAKE_CURRENT_BINARY_DIR}/version.h )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
+               ${CMAKE_CURRENT_BINARY_DIR}/version.h )
 
-if ( NOT MACOSX_FRAMEWORK )
-  set ( include_HEADERS 
-    audio.h 
-    event.h 
-    gen.h 
-    log.h 
-    midi.h 
-    misc.h 
-    mod.h 
-    ramsfont.h 
-    seq.h 
-    seqbind.h 
-    settings.h 
-    sfont.h 
-    shell.h 
-    synth.h 
-    types.h 
-    voice.h 
+if(NOT MACOSX_FRAMEWORK)
+  set(include_HEADERS
+    audio.h
+    event.h
+    gen.h
+    log.h
+    midi.h
+    misc.h
+    mod.h
+    ramsfont.h
+    seq.h
+    seqbind.h
+    settings.h
+    sfont.h
+    shell.h
+    synth.h
+    types.h
+    voice.h
   )
-  install ( 
-    FILES 
+  install(
+    FILES
       ${include_HEADERS}
       ${CMAKE_CURRENT_BINARY_DIR}/version.h
-    DESTINATION 
-      ${INCLUDE_INSTALL_DIR}/fluidsynth 
+    DESTINATION
+      ${INCLUDE_INSTALL_DIR}/fluidsynth
   )
-endif ( NOT MACOSX_FRAMEWORK )
+endif()

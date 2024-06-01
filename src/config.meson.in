@@ -13,9 +13,6 @@
 /* whether or not we are supporting CoreMIDI */
 #mesondefine COREMIDI_SUPPORT
 
-/* whether or not we are supporting DART */
-#mesondefine DART_SUPPORT
-
 /* Define if building for Mac OS X Darwin */
 #mesondefine DARWIN
 
@@ -126,9 +123,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #mesondefine HAVE_UNISTD_H
-
-/* Define to 1 if you have the <windows.h> header file. */
-#mesondefine HAVE_WINDOWS_H
 
 /* Define to 1 if you have the <getopt.h> header file. */
 #mesondefine HAVE_GETOPT_H

@@ -19,8 +19,8 @@
 
 # CMake based build system. Pedro Lopez-Cabanillas <plcl@users.sf.net>
 
-add_subdirectory ( fluidsynth )
+add_subdirectory(fluidsynth)
 
-IF (NOT MACOSX_FRAMEWORK )
-    install ( FILES fluidsynth.h DESTINATION ${INCLUDE_INSTALL_DIR} )
-ENDIF (NOT MACOSX_FRAMEWORK )
+IF (NOT MACOSX_FRAMEWORK)
+    install(FILES fluidsynth.h DESTINATION ${INCLUDE_INSTALL_DIR})
+ENDIF()
