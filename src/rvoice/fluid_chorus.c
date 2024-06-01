@@ -305,15 +305,15 @@ fluid_chorus_set(fluid_chorus_t* chorus, int set, int nr, float level,
 
     /* initialize LFO table */
     if (chorus->type == FLUID_CHORUS_MOD_SINE) {
-        fluid_chorus_sine(chorus->lookup_tab, chorus->modulation_period_samples,
+        fluid_chorus_sine(chorus->lookup_tab, (int)chorus->modulation_period_samples,
                           modulation_depth_samples);
     } else if (chorus->type == FLUID_CHORUS_MOD_TRIANGLE) {
-        fluid_chorus_triangle(chorus->lookup_tab, chorus->modulation_period_samples,
+        fluid_chorus_triangle(chorus->lookup_tab, (int)chorus->modulation_period_samples,
                               modulation_depth_samples);
     } else {
         fluid_log(FLUID_WARN, "chorus: Unknown modulation type. Using sinewave.");
         chorus->type = FLUID_CHORUS_MOD_SINE;
-        fluid_chorus_sine(chorus->lookup_tab, chorus->modulation_period_samples,
+        fluid_chorus_sine(chorus->lookup_tab, (int)chorus->modulation_period_samples,
                           modulation_depth_samples);
     }
 

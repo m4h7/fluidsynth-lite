@@ -64,7 +64,7 @@ new_fluid_midi_file(const char* buffer, size_t length)
     mf->running_status = -1;
 
     mf->buffer = buffer;
-    mf->buf_len = length;
+    mf->buf_len = (int)length;
     mf->buf_pos = 0;
     mf->eof = FALSE;
 
@@ -304,7 +304,7 @@ fluid_midi_file_read_tracklen(fluid_midi_file *mf)
     if (fluid_midi_file_read(mf, length, 4) != FLUID_OK) {
         return FLUID_FAILED;
     }
-    mf->tracklen = fluid_getlength(length);
+    mf->tracklen = (int)fluid_getlength(length);
     mf->trackpos = 0;
     mf->eot = 0;
     return FLUID_OK;
@@ -380,7 +380,7 @@ fluid_midi_file_read_track(fluid_midi_file *mf, fluid_player_t *player, int num)
             if (fluid_midi_file_read(mf, length, 4) != FLUID_OK) {
                 return FLUID_FAILED;
             }
-            skip = fluid_getlength(length);
+            skip = (int)fluid_getlength(length);
             /* fseek(mf->fp, skip, SEEK_CUR); */
             if (fluid_midi_file_skip(mf, skip) != FLUID_OK) {
                 return FLUID_FAILED;
@@ -1071,7 +1071,7 @@ delete_fluid_track(fluid_track_t *track)
 int
 fluid_track_set_name(fluid_track_t *track, char *name)
 {
-    int len;
+    size_t len;
     if (track->name != NULL) {
         FLUID_FREE(track->name);
     }
