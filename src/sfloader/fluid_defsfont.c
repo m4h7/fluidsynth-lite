@@ -1141,7 +1141,7 @@ fluid_preset_zone_t *fluid_preset_zone_next(fluid_preset_zone_t *preset)
  */
 fluid_preset_zone_t *new_fluid_preset_zone(char *name)
 {
-    int size;
+    size_t size;
     fluid_preset_zone_t *zone = NULL;
     zone = FLUID_NEW(fluid_preset_zone_t);
     if (zone == NULL) {
@@ -1541,7 +1541,7 @@ fluid_inst_zone_t *fluid_inst_get_global_zone(fluid_inst_t *inst)
  */
 fluid_inst_zone_t *new_fluid_inst_zone(char *name)
 {
-    int size;
+    size_t size;
     fluid_inst_zone_t *zone = NULL;
     zone = FLUID_NEW(fluid_inst_zone_t);
     if (zone == NULL) {
@@ -2061,7 +2061,7 @@ SFData *sfload_file(const char *fname)
 {
     SFData *sf = NULL;
     FILE *fd;
-    int fsize = 0;
+    long fsize = 0;
     int err = FALSE;
 
     if (!(fd = fopen(fname, "rb"))) {
@@ -2093,7 +2093,7 @@ SFData *sfload_file(const char *fname)
     if (!err)
         rewind(fd);
 
-    if (!err && !load_body(fsize, sf, fd))
+    if (!err && !load_body((unsigned int)fsize, sf, fd))
         err = TRUE; /* load the sfont */
 
     if (err) {
@@ -2274,7 +2274,7 @@ static int process_sdta(unsigned int size, SFData *sf, FILE *fd)
         return (gerr(ErrCorr, _("SDTA chunk size mismatch")));
 
     /* sample data follows */
-    sf->samplepos = ftell(fd);
+    sf->samplepos = (int)ftell(fd);
 
     /* used in fixup_sample() to check validity of sample headers */
     sdtachunk_size = chunk.size;
@@ -3036,7 +3036,7 @@ static int fixup_pgen(SFData *sf)
 {
     fluid_list_t *p, *p2, *p3;
     SFZone *z;
-    int i;
+    long i;
 
     p = sf->preset;
     while (p) {
@@ -3044,7 +3044,7 @@ static int fixup_pgen(SFData *sf)
         while (p2) { /* traverse this preset's zones */
             z = (SFZone *)(p2->data);
             if ((i = FLUID_POINTER_TO_INT(z->instsamp))) { /* load instrument # */
-                p3 = fluid_list_nth(sf->inst, i - 1);
+                p3 = fluid_list_nth(sf->inst, (int)(i - 1));
                 if (!p3)
                     return (gerr(
                                 ErrCorr, _("Preset %03d %03d: Invalid instrument reference"),
@@ -3065,7 +3065,7 @@ static int fixup_igen(SFData *sf)
 {
     fluid_list_t *p, *p2, *p3;
     SFZone *z;
-    int i;
+    long i;
 
     p = sf->inst;
     while (p) {
@@ -3073,7 +3073,7 @@ static int fixup_igen(SFData *sf)
         while (p2) { /* traverse instrument's zones */
             z = (SFZone *)(p2->data);
             if ((i = FLUID_POINTER_TO_INT(z->instsamp))) { /* load sample # */
-                p3 = fluid_list_nth(sf->sample, i - 1);
+                p3 = fluid_list_nth(sf->sample, (int)(i - 1));
                 if (!p3)
                     return (gerr(ErrCorr,
                                  _("Instrument \"%s\": Invalid sample reference"),

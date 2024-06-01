@@ -1243,7 +1243,7 @@ fluid_direct_equal (const void *v1, const void *v2)
 unsigned int
 fluid_direct_hash (const void *v)
 {
-    return FLUID_POINTER_TO_UINT(v);
+    return (unsigned int)FLUID_POINTER_TO_UINT(v);
 }
 
 /**

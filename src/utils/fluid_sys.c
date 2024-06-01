@@ -694,7 +694,7 @@ fluid_timer_run (void *data)
     fluid_timer_t *timer;
     int count = 0;
     int cont;
-    long start;
+    unsigned int start;
     long delay;
 
     timer = (fluid_timer_t *)data;
