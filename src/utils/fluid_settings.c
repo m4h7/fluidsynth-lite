@@ -1470,7 +1470,7 @@ fluid_settings_foreach_iter (void* key, void* value, void* data)
     fluid_settings_foreach_bag_t *bag = data;
     char *keystr = key;
     fluid_setting_node_t *node = value;
-    int pathlen;
+    size_t pathlen;
     char *s;
 
     pathlen = strlen (bag->path);

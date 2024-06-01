@@ -477,7 +477,7 @@ void fluid_sample_timer_process(fluid_synth_t* synth)
         }
 
         msec = (long) (1000.0*((double) (ticks - st->starttick))/synth->sample_rate);
-        cont = (*st->callback)(st->data, msec);
+        cont = (*st->callback)(st->data, (unsigned int)msec);
         if (cont == 0) {
             st->isfinished = 1;
         }

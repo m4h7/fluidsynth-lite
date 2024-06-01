@@ -715,7 +715,7 @@ fluid_timer_run (void *data)
 #ifdef _WIN32
         if (delay > 0) Sleep (delay);
 #else
-        if (delay > 0) usleep (delay * 1000);
+        if (delay > 0) usleep ((useconds_t)delay * 1000);
 #endif
     }
 
@@ -857,12 +857,12 @@ static int
 fluid_istream_gets (fluid_istream_t in, char* buf, int len)
 {
     char c;
-    int n;
+    long n;
 
     buf[len - 1] = 0;
 
     while (--len > 0) {
-        n = read(in, &c, 1);
+        n = (long)read(in, &c, 1);
         if (n == -1) return -1;
 
         if (n == 0) {
@@ -911,5 +911,5 @@ fluid_ostream_printf (fluid_ostream_t out, char* format, ...)
 
     buf[4095] = 0;
 
-    return write (out, buf, strlen (buf));
+    return (int)write (out, buf, strlen (buf));
 }
